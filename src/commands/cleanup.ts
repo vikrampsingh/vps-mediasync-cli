@@ -87,7 +87,7 @@ export default class Cleanup extends Command {
     const confirm = await askInput(
       flags["dry-run"]
         ? "Dry-run: press enter to simulate cleanup"
-        : "Type YES to confirm deletion",
+        : "Type yes to confirm deletion",
     );
 
     if (!flags["dry-run"] && confirm !== "yes") {
