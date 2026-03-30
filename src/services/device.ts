@@ -1,7 +1,67 @@
 import { getDevices, checkAdb } from './adb.js';
 import { askSelect } from '../utils/prompt.js';
 import { logger } from '../core/logger.js';
+import { execSync } from 'child_process';
 
+// -----------------------------
+// Get human-readable device name
+// -----------------------------
+const getDeviceName = (deviceId: string): string => {
+  try {
+    const model = execSync(
+      `adb -s ${deviceId} shell getprop ro.product.model`
+    ).toString().trim();
+
+    const brand = execSync(
+      `adb -s ${deviceId} shell getprop ro.product.manufacturer`
+    ).toString().trim();
+
+    const version = execSync(
+      `adb -s ${deviceId} shell getprop ro.build.version.release`
+    ).toString().trim();
+
+    const cleanedModel = model.replace(/\r/g, '').trim();
+    const cleanedBrand = brand.replace(/\r/g, '').trim();
+    const cleanedVersion = version.replace(/\r/g, '').trim();
+
+    // ✅ Full info
+    if (cleanedBrand && cleanedModel && cleanedVersion) {
+      return `${cleanedBrand} ${cleanedModel} • Android ${cleanedVersion}`;
+    }
+
+    // ✅ Partial fallback
+    if (cleanedBrand && cleanedModel) {
+      return `${cleanedBrand} ${cleanedModel}`;
+    }
+
+    if (cleanedModel) {
+      return cleanedModel;
+    }
+
+    // 🔥 fallback → adb devices -l
+    const output = execSync('adb devices -l').toString();
+
+    const line = output
+      .split('\n')
+      .find(l => l.includes(deviceId));
+
+    if (line) {
+      const match = line.match(/model:(\S+)/);
+      if (match) {
+        return match[1];
+      }
+    }
+
+    return deviceId;
+
+  } catch {
+    return deviceId;
+  }
+};
+
+// -----------------------------
+// Select Device
+// -----------------------------
 export const selectDevice = async (): Promise<string | null> => {
 
   logger.step('Checking ADB...');
@@ -39,12 +99,18 @@ WiFi:
     return null;
   }
 
-  // ✅ ALWAYS prompt (even if one device)
+  // 🔥 Enrich devices with names
+  const enrichedDevices = devices.map((id: string) => ({
+    id,
+    name: getDeviceName(id),
+  }));
+
+  // ✅ Use enrichedDevices in prompt
   const selectedDevice = await askSelect(
     'Select a device:',
-    devices.map((d: string) => ({
-      name: d,
-      value: d,
+    enrichedDevices.map((d) => ({
+      name: `${d.name} (${d.id})`,
+      value: d.id,
     }))
   );
 

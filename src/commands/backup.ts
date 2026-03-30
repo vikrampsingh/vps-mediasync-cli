@@ -6,11 +6,19 @@ import { runBackup } from '../services/sync.js';
 import { askCheckbox } from '../utils/prompt.js';
 import { logger } from '../core/logger.js';
 import { CategoryKey } from '../core/categories.js';
+import { checkDependencies } from '../services/dependency.js';
+
 
 export default class Backup extends Command {
   static description = 'Backup media from Android device';
 
   async run(): Promise<void> {
+
+    // -------------------
+    // Check dependencies
+    // -------------------
+    const ready = await checkDependencies();
+      if (!ready) return;
 
     // -------------------
     // Device selection

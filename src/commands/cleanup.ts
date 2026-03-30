@@ -6,6 +6,7 @@ import { askCheckbox, askInput } from "../utils/prompt.js";
 import { logger } from "../core/logger.js";
 import { CategoryKey } from "../core/categories.js";
 import { execSync } from "child_process";
+import { checkDependencies } from '../services/dependency.js';
 
 export default class Cleanup extends Command {
   static description = "Clean old files from Android device";
@@ -18,7 +19,14 @@ export default class Cleanup extends Command {
   };
 
   async run(): Promise<void> {
+    
     const { flags } = await this.parse(Cleanup);
+
+       // -------------------
+    // Check dependencies
+    // -------------------
+    const ready = await checkDependencies();
+      if (!ready) return;
 
     // -------------------
     // Device selection
