@@ -4,7 +4,7 @@
   "description": "CLI tool to backup and clean Android media to Mac",
   "type": "module",
   "bin": {
-    "vps-mediasync-cli": "./bin/run.js"
+    "vps-mediasync-cli": "bin/run.js"
   },
   "oclif": {
     "commands": "./dist/commands",
