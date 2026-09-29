@@ -1,4 +1,4 @@
-# **MediaSync CLI — Product & Technical Specification**
+# **Product Specification**
 
 ---
 

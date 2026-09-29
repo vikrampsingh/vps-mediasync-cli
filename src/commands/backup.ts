@@ -1,4 +1,4 @@
-import { Command } from '@oclif/core';
+import { Command, Flags } from '@oclif/core';
 import { selectDevice } from '../services/device.js';
 import { resolvePaths } from '../services/resolver.js';
 import { selectDestination } from '../services/filesystem.js';
@@ -12,7 +12,15 @@ import { checkDependencies } from '../services/dependency.js';
 export default class Backup extends Command {
   static description = 'Backup media from Android device';
 
+  static flags = {
+    'dry-run': Flags.boolean({
+      description: 'Preview what would be backed up without copying files',
+      default: false,
+    }),
+  };
+
   async run(): Promise<void> {
+    const { flags } = await this.parse(Backup);
 
     // -------------------
     // Check dependencies
@@ -70,6 +78,6 @@ export default class Backup extends Command {
     // -------------------
     // Execute backup
     // -------------------
-    await runBackup(paths, DEST);
+    await runBackup(paths, DEST, flags['dry-run']);
   }
 }

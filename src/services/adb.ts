@@ -35,3 +35,16 @@ export const getDevices = (): string[] => {
     return [];
   }
 };
+
+// -----------------------------
+// Count files in an Android path
+// -----------------------------
+export const countFiles = (path: string): number | null => {
+  try {
+    const output = execSync(`adb shell "find '${path}' -type f | wc -l"`).toString().trim();
+    const count = parseInt(output, 10);
+    return Number.isNaN(count) ? null : count;
+  } catch {
+    return null;
+  }
+};

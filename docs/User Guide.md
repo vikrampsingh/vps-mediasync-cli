@@ -1,4 +1,4 @@
-# MediaSync CLI — User Guide
+adb# MediaSync CLI — User Guide
 
 MediaSync CLI is an interactive command-line tool for backing up selected data from an Android phone to a folder on your Mac.
 
