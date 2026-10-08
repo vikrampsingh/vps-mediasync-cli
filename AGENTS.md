@@ -4,29 +4,28 @@
 
 ## 1. Before Working on the Project
 
-Read:
-
-```text
-docs/PROJECT.md
-````
-
-`docs/PROJECT.md` is the authoritative reference for:
-
-* product purpose
-* architecture
-* workflows
-* design principles
-* current development priorities
-* longer-term direction
-* important architectural decisions
-
-This file (`AGENTS.md`) defines **how a coding agent should work** on the project.
-
-Detailed feature and product specifications live under:
+Read the specifications under:
 
 ```text
 docs/specs/
 ```
+
+They are the authoritative reference for the product:
+
+* `docs/specs/product-requirements.md`
+  → product purpose, target users, V1 scope, functional and safety
+    requirements, definition of done
+* `docs/specs/architecture-design.md`
+  → architecture, components, runtime, internal pipelines,
+    important architectural decisions
+* `docs/specs/ux-guidelines.md`
+  → interaction model, prompts, message style, error UX
+* `docs/specs/user-guide.md`
+  → installation, device setup, command usage
+* `docs/specs/roadmap.md`
+  → current development priorities and longer-term direction
+
+This file (`AGENTS.md`) defines **how a coding agent should work** on the project.
 
 When a task relates to a documented feature, read the relevant specification before implementing it.
 
@@ -76,8 +75,13 @@ bin/
 └── run.js          npm/oclif executable entry point
 
 docs/
-├── PROJECT.md      Product and architecture documentation
-└── spec/           Detailed feature/product specifications
+├── specs/          Product specifications (see §23)
+│   ├── product-requirements.md
+│   ├── architecture-design.md
+│   ├── ux-guidelines.md
+│   ├── user-guide.md
+│   └── roadmap.md
+└── plans/          Per-feature implementation plans
 
 dist/
 └──                 Generated TypeScript output
@@ -211,7 +215,6 @@ For every non-trivial task:
 Before changing code:
 
 * read the relevant source files
-* read `docs/PROJECT.md`
 * read the relevant specification under `docs/specs/`
 * understand existing behavior
 * identify dependencies between components
@@ -816,59 +819,56 @@ Do not turn a feature request into an unsolicited rewrite.
 
 ## 23. Documentation Rules
 
-Use:
+Documentation responsibilities:
 
 ```text
-docs/PROJECT.md
-```
+docs/specs/product-requirements.md
+    → what the product is and must do
+      (purpose, users, scope, functional / safety / non-functional
+       requirements, definition of done)
 
-for:
+docs/specs/architecture-design.md
+    → how the product is built
+      (layers, components, runtime, pipelines, design decisions,
+       architectural principles)
 
-* product intent
-* architecture
-* workflows
-* design principles
-* development direction
-* important architectural decisions
+docs/specs/ux-guidelines.md
+    → how the product interacts
+      (interaction model, prompts, message style, error UX)
 
-Use:
+docs/specs/user-guide.md
+    → how to install and use the product
 
-```text
-docs/specs/
-```
+docs/specs/roadmap.md
+    → current milestone and future direction
 
-for:
+docs/plans/
+    → per-feature implementation plans with checklists
 
-* feature requirements
-* detailed product behavior
-* functional specifications
-* UX requirements
-* acceptance criteria
-* feature-specific technical requirements
-
-Use:
-
-```text
 AGENTS.md
+    → how a coding agent works on the project
+      (behavior, development workflow, safety constraints,
+       project-specific implementation rules)
 ```
-
-for:
-
-* coding-agent behavior
-* development workflow
-* safety constraints
-* project-specific implementation rules
 
 Keep these responsibilities separate.
 
-When an architectural decision changes, update `docs/PROJECT.md`.
+When a product requirement changes, update
+`docs/specs/product-requirements.md`.
 
-When a feature specification changes, update the relevant file under
-`docs/specs/`.
+When an architectural decision changes, update
+`docs/specs/architecture-design.md`.
+
+When interaction or UX behavior changes, update
+`docs/specs/ux-guidelines.md`.
+
+When installation or usage changes, update `docs/specs/user-guide.md`.
+
+When development direction changes, update `docs/specs/roadmap.md`.
 
 When an agent workflow rule changes, update `AGENTS.md`.
 
-Do not duplicate the same information across all three locations.
+Do not duplicate the same information across these locations.
 
 ---
 
@@ -954,17 +954,13 @@ over cleverness or unnecessary abstraction.
 
 ````
 
-### One important change from the previous version
-
-I deliberately added this to the hierarchy:
+### Documentation hierarchy
 
 ```text
 AGENTS.md
     → how to work
 
-docs/PROJECT.md
-    → what the project is and how it is architected
-
 docs/specs/
-    → exactly what a particular feature should do
+    → what the product is, how it is architected, how it interacts,
+      how to use it, and where it is going (see §23)
 ````

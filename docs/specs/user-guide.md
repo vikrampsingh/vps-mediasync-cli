@@ -1,4 +1,4 @@
-adb# MediaSync CLI — User Guide
+# MediaSync CLI — User Guide
 
 MediaSync CLI is an interactive command-line tool for backing up selected data from an Android phone to a folder on your Mac.
 
@@ -41,15 +41,15 @@ The cleanup workflow lets you:
 
 ---
 
-# 2. Requirements
+## 2. Requirements
 
-## Operating system
+### Operating system
 
 The current V1 workflow is designed primarily for **macOS**.
 
-## Node.js
+### Node.js
 
-MediaSync is distributed as an npm CLI package and requires Node.js.
+MediaSync is distributed as an npm CLI package and requires Node.js (>= 18).
 
 Check your version:
 
@@ -57,7 +57,7 @@ Check your version:
 node --version
 ```
 
-## ADB
+### ADB
 
 MediaSync uses Android Debug Bridge to communicate with your Android device.
 
@@ -75,7 +75,7 @@ Alternatively:
 brew install android-platform-tools
 ```
 
-## rsync
+### rsync
 
 MediaSync uses rsync for incremental synchronization.
 
@@ -89,7 +89,7 @@ rsync --version
 
 ---
 
-# 3. Installation
+## 3. Installation
 
 Install MediaSync globally using npm:
 
@@ -111,11 +111,11 @@ vps-mediasync-cli --help
 
 ---
 
-# 4. Connecting your Android phone
+## 4. Connecting your Android phone
 
 MediaSync uses ADB to communicate with your phone.
 
-## USB connection
+### USB connection
 
 On your Android phone:
 
@@ -123,7 +123,7 @@ On your Android phone:
 2. Enable **Developer Options**
 3. Enable **USB Debugging**
 4. Connect the phone to your Mac using USB
-5. Accept the **ad** prompt on the phone
+5. Accept the **ADB authorization** prompt on the phone
 
 Verify:
 
@@ -140,9 +140,7 @@ edd07889    device
 
 MediaSync will detect the device automatically.
 
----
-
-## Wi-Fi connection
+### Wi-Fi connection
 
 ADB can also communicate with an Android device over Wi-Fi.
 
@@ -154,11 +152,11 @@ Once the device has been connected through ADB, verify:
 adb devices
 ```
 
-MediaSync will treat USB and Wi-Fi connected devices in the same way.
+MediaSync treats USB and Wi-Fi connected devices in the same way.
 
 ---
 
-# 5. Backup
+## 5. Backup
 
 Run:
 
@@ -168,9 +166,7 @@ vps-mediasync-cli backup
 
 MediaSync will guide you through the complete process.
 
----
-
-## Step 1 — Dependency check
+### Step 1 — Dependency check
 
 MediaSync first checks required tools:
 
@@ -182,9 +178,7 @@ MediaSync first checks required tools:
 
 If ADB is missing, you will be asked whether you want MediaSync to install it.
 
----
-
-## Step 2 — Select your Android device
+### Step 2 — Select your Android device
 
 MediaSync always asks you to select the device, even when only one device is connected.
 
@@ -197,9 +191,7 @@ For example:
 
 This prevents MediaSync from silently choosing the wrong phone when multiple devices are connected.
 
----
-
-## Step 3 — Select what to back up
+### Step 3 — Select what to back up
 
 MediaSync uses **user-oriented categories** rather than requiring you to understand Android's storage structure.
 
@@ -216,7 +208,7 @@ For example:
 ◯ Apps
 ```
 
-### Images
+#### Images
 
 Includes common locations such as:
 
@@ -226,7 +218,7 @@ Screenshots
 Pictures
 ```
 
-### Videos
+#### Videos
 
 Includes common video locations such as:
 
@@ -235,7 +227,7 @@ Camera
 Movies
 ```
 
-### Downloads
+#### Downloads
 
 Includes:
 
@@ -243,7 +235,7 @@ Includes:
 Downloads
 ```
 
-### Documents
+#### Documents
 
 Includes:
 
@@ -251,7 +243,7 @@ Includes:
 Documents
 ```
 
-### Audio / Recordings
+#### Audio / Recordings
 
 Includes:
 
@@ -264,7 +256,7 @@ MediaSync converts these high-level choices into the appropriate Android storage
 
 ---
 
-# 6. App-aware backup
+## 6. App-aware backup
 
 When the **Apps** category is selected, MediaSync can inspect the installed Android applications and allow the user to select applications whose media should be backed up.
 
@@ -286,7 +278,7 @@ MediaSync determines the corresponding application storage location.
 
 ---
 
-# 7. Backup destination
+## 7. Backup destination
 
 MediaSync allows you to select the permanent backup destination interactively.
 
@@ -316,9 +308,9 @@ MediaSync creates its backup folders underneath the selected destination.
 
 ---
 
-# 8. How backup works
+## 8. How backup works
 
-MediaSync uses a two-stage process.
+MediaSync uses a two-stage process:
 
 ```text
 Android
@@ -348,9 +340,12 @@ After synchronization, the temporary MediaSync directory is removed.
 
 The permanent backup remains untouched.
 
+> The design rationale behind this pipeline is documented in
+> `architecture-design.md` §4.
+
 ---
 
-# 9. Incremental backups
+## 9. Incremental backups
 
 MediaSync is designed for repeated backups.
 
@@ -372,7 +367,7 @@ This makes subsequent backups significantly more efficient than repeatedly copyi
 
 ---
 
-# 10. Cleanup
+## 10. Cleanup
 
 Run:
 
@@ -405,7 +400,7 @@ MediaSync identifies files matching the selected criteria before deletion.
 
 ---
 
-# 11. Dry-run mode
+## 11. Dry-run mode
 
 Cleanup is potentially destructive, so MediaSync provides a dry-run mode.
 
@@ -431,9 +426,17 @@ Dry-run:
 Android → Find files → Preview → STOP
 ```
 
+The `backup` command also supports `--dry-run`, which previews what would be
+backed up (file counts per source and the destination) without copying
+anything:
+
+```bash
+vps-mediasync-cli backup --dry-run
+```
+
 ---
 
-# 12. Hello command
+## 12. Hello command
 
 The `hello` command is primarily a development/scaffolding command.
 
@@ -452,7 +455,7 @@ It is not part of the actual backup workflow.
 
 ---
 
-# 13. Command summary
+## 13. Command summary
 
 ```bash
 # Show help
@@ -463,6 +466,9 @@ vps-mediasync-cli --version
 
 # Backup Android data
 vps-mediasync-cli backup
+
+# Preview backup without copying
+vps-mediasync-cli backup --dry-run
 
 # Clean old Android files
 vps-mediasync-cli cleanup
@@ -476,7 +482,7 @@ vps-mediasync-cli hello
 
 ---
 
-# 14. Safety recommendations
+## 14. Safety recommendations
 
 Before using `cleanup`:
 
@@ -490,7 +496,7 @@ For important data, maintain an additional backup rather than relying on a singl
 
 ---
 
-# 15. Typical workflow
+## 15. Typical workflow
 
 A typical MediaSync session looks like:
 
