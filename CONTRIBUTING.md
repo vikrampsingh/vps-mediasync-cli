@@ -10,7 +10,7 @@ project's [MIT License](LICENSE).
 
 ## 1. Ways to Contribute
 
-* **Features** — check [docs/specs/roadmap.md](docs/specs/roadmap.md) for
+* **Features** — check [docs/project/roadmap.md](docs/project/roadmap.md) for
   the current milestone and planned direction
 * **Bug fixes** — small, focused fixes are always welcome
 * **Documentation** — corrections and improvements to `docs/` and the README
@@ -54,13 +54,13 @@ vps-mediasync-cli backup
 ```
 
 To test against a real device, connect an Android phone with USB debugging
-enabled (see [docs/specs/user-guide.md](docs/specs/user-guide.md) §4).
+enabled (see [docs/project/user-guide.md](docs/project/user-guide.md) §4).
 
 ---
 
 ## 3. Before Changing Code
 
-1. Read the relevant specification in [docs/specs/](docs/specs/) — they
+1. Read the relevant specification in [docs/project/](docs/project/) — they
    describe what the product must do, how it is built, and how it should
    interact with users.
 2. Read [AGENTS.md](AGENTS.md) — the repository's workflow and safety rules
@@ -83,7 +83,7 @@ src/
   commands from `dist/commands/`. `src/index.ts` is **not** the CLI entry.
 * Commands coordinate; services do the work. Do not put filesystem, ADB,
   sync, or cleanup logic directly into command classes.
-* Layer and design details: [docs/specs/architecture-design.md](docs/specs/architecture-design.md)
+* Layer and design details: [docs/project/architecture-design.md](docs/project/architecture-design.md)
 
 ---
 
@@ -102,7 +102,7 @@ src/
   inaccessible paths, never build destructive shell commands from unchecked
   input.
 * Follow the UX conventions in
-  [docs/specs/ux-guidelines.md](docs/specs/ux-guidelines.md): friendly names
+  [docs/project/ux-guidelines.md](docs/project/ux-guidelines.md): friendly names
   over package IDs, no raw Android paths in normal UX, spinners for long
   operations.
 * Preserve working behavior — no unrelated refactoring inside a feature PR.
@@ -141,11 +141,11 @@ affects behavior, update the matching document:
 
 | Change | Update |
 | ------ | ------ |
-| Product requirement / feature scope | `docs/specs/product-requirements.md` |
-| Architecture or design decision | `docs/specs/architecture-design.md` |
-| Interaction, prompts, messages | `docs/specs/ux-guidelines.md` |
-| Installation or usage | `docs/specs/user-guide.md` |
-| Development direction | `docs/specs/roadmap.md` |
+| Product requirement / feature scope | `docs/project/product-requirements.md` |
+| Architecture or design decision | `docs/project/architecture-design.md` |
+| Interaction, prompts, messages | `docs/project/ux-guidelines.md` |
+| Installation or usage | `docs/project/user-guide.md` |
+| Development direction | `docs/project/roadmap.md` |
 
 For multi-step features, add a checklist plan under `docs/plans/<feature>.md`
 (see `docs/plans/backup-dry-run.md` for the format).

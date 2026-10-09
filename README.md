@@ -38,7 +38,7 @@ vps-mediasync-cli cleanup
 vps-mediasync-cli cleanup --dry-run
 ```
 
-📖 Full walkthrough with examples: [docs/specs/user-guide.md](docs/specs/user-guide.md)
+📖 Full walkthrough with examples: [docs/project/user-guide.md](docs/project/user-guide.md)
 
 ---
 
@@ -72,11 +72,11 @@ vps-mediasync-cli cleanup --dry-run
 
 | Document | What it covers |
 | -------- | -------------- |
-| [docs/specs/product-requirements.md](docs/specs/product-requirements.md) | What the product is and must do |
-| [docs/specs/architecture-design.md](docs/specs/architecture-design.md) | How the product is built |
-| [docs/specs/ux-guidelines.md](docs/specs/ux-guidelines.md) | How the product interacts |
-| [docs/specs/user-guide.md](docs/specs/user-guide.md) | How to install and use the product |
-| [docs/specs/roadmap.md](docs/specs/roadmap.md) | Where the product is going |
+| [docs/project/product-requirements.md](docs/project/product-requirements.md) | What the product is and must do |
+| [docs/project/architecture-design.md](docs/project/architecture-design.md) | How the product is built |
+| [docs/project/ux-guidelines.md](docs/project/ux-guidelines.md) | How the product interacts |
+| [docs/project/user-guide.md](docs/project/user-guide.md) | How to install and use the product |
+| [docs/project/roadmap.md](docs/project/roadmap.md) | Where the product is going |
 | [docs/plans/](docs/plans/) | Per-feature implementation plans |
 
 ---
@@ -111,7 +111,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contributor guide.
 
 ## 🚀 Roadmap
 
-See [docs/specs/roadmap.md](docs/specs/roadmap.md) for the current milestone and future direction.
+See [docs/project/roadmap.md](docs/project/roadmap.md) for the current milestone and future direction.
 
 ---
 

@@ -7,22 +7,22 @@
 Read the specifications under:
 
 ```text
-docs/specs/
+docs/project/
 ```
 
 They are the authoritative reference for the product:
 
-* `docs/specs/product-requirements.md`
+* `docs/project/product-requirements.md`
   → product purpose, target users, V1 scope, functional and safety
     requirements, definition of done
-* `docs/specs/architecture-design.md`
+* `docs/project/architecture-design.md`
   → architecture, components, runtime, internal pipelines,
     important architectural decisions
-* `docs/specs/ux-guidelines.md`
+* `docs/project/ux-guidelines.md`
   → interaction model, prompts, message style, error UX
-* `docs/specs/user-guide.md`
+* `docs/project/user-guide.md`
   → installation, device setup, command usage
-* `docs/specs/roadmap.md`
+* `docs/project/roadmap.md`
   → current development priorities and longer-term direction
 
 This file (`AGENTS.md`) defines **how a coding agent should work** on the project.
@@ -75,7 +75,7 @@ bin/
 └── run.js          npm/oclif executable entry point
 
 docs/
-├── specs/          Product specifications (see §23)
+├── project/        Product documentation (see §23)
 │   ├── product-requirements.md
 │   ├── architecture-design.md
 │   ├── ux-guidelines.md
@@ -215,7 +215,7 @@ For every non-trivial task:
 Before changing code:
 
 * read the relevant source files
-* read the relevant specification under `docs/specs/`
+* read the relevant specification under `docs/project/`
 * understand existing behavior
 * identify dependencies between components
 * inspect the current Git state
@@ -822,24 +822,24 @@ Do not turn a feature request into an unsolicited rewrite.
 Documentation responsibilities:
 
 ```text
-docs/specs/product-requirements.md
+docs/project/product-requirements.md
     → what the product is and must do
       (purpose, users, scope, functional / safety / non-functional
        requirements, definition of done)
 
-docs/specs/architecture-design.md
+docs/project/architecture-design.md
     → how the product is built
       (layers, components, runtime, pipelines, design decisions,
        architectural principles)
 
-docs/specs/ux-guidelines.md
+docs/project/ux-guidelines.md
     → how the product interacts
       (interaction model, prompts, message style, error UX)
 
-docs/specs/user-guide.md
+docs/project/user-guide.md
     → how to install and use the product
 
-docs/specs/roadmap.md
+docs/project/roadmap.md
     → current milestone and future direction
 
 docs/plans/
@@ -854,17 +854,17 @@ AGENTS.md
 Keep these responsibilities separate.
 
 When a product requirement changes, update
-`docs/specs/product-requirements.md`.
+`docs/project/product-requirements.md`.
 
 When an architectural decision changes, update
-`docs/specs/architecture-design.md`.
+`docs/project/architecture-design.md`.
 
 When interaction or UX behavior changes, update
-`docs/specs/ux-guidelines.md`.
+`docs/project/ux-guidelines.md`.
 
-When installation or usage changes, update `docs/specs/user-guide.md`.
+When installation or usage changes, update `docs/project/user-guide.md`.
 
-When development direction changes, update `docs/specs/roadmap.md`.
+When development direction changes, update `docs/project/roadmap.md`.
 
 When an agent workflow rule changes, update `AGENTS.md`.
 
@@ -960,7 +960,7 @@ over cleverness or unnecessary abstraction.
 AGENTS.md
     → how to work
 
-docs/specs/
+docs/project/
     → what the product is, how it is architected, how it interacts,
       how to use it, and where it is going (see §23)
 ````
