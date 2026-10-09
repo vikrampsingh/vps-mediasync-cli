@@ -2,6 +2,7 @@
   "name": "vps-mediasync-cli",
   "version": "1.0.1",
   "description": "CLI tool to backup and clean Android media to Mac",
+  "license": "MIT",
   "type": "module",
   "bin": {
     "vps-mediasync-cli": "bin/run.js"

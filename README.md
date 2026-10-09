@@ -4,30 +4,6 @@ Backup and clean Android media to your Mac — safely and interactively.
 
 ---
 
-## 🚀 Install
-
-```bash
-npm install -g vps-mediasync-cli
-```
-
----
-
-## ⚡ Usage
-
-### Backup media
-
-```bash
-vps-mediasync-cli backup
-```
-
-### Clean old files
-
-```bash
-vps-mediasync-cli cleanup
-```
-
----
-
 ## ✨ Features
 
 * 📱 Detect connected Android devices (USB / WiFi)
@@ -38,8 +14,38 @@ vps-mediasync-cli cleanup
 
 ---
 
+## 🚀 Install
+
+```bash
+npm install -g vps-mediasync-cli
+```
+
+---
+
+## ⚡ Usage
+
+```bash
+# Backup media
+vps-mediasync-cli backup
+
+# Preview a backup without copying anything
+vps-mediasync-cli backup --dry-run
+
+# Clean old files
+vps-mediasync-cli cleanup
+
+# Preview a cleanup without deleting anything
+vps-mediasync-cli cleanup --dry-run
+```
+
+📖 Full walkthrough with examples: [docs/specs/user-guide.md](docs/specs/user-guide.md)
+
+---
+
 ## 📋 Requirements
 
+* macOS
+* Node.js >= 18
 * ADB (Android Debug Bridge)
 * rsync (pre-installed on macOS)
 
@@ -62,6 +68,37 @@ vps-mediasync-cli cleanup
 
 ---
 
+## 📚 Documentation
+
+| Document | What it covers |
+| -------- | -------------- |
+| [docs/specs/product-requirements.md](docs/specs/product-requirements.md) | What the product is and must do |
+| [docs/specs/architecture-design.md](docs/specs/architecture-design.md) | How the product is built |
+| [docs/specs/ux-guidelines.md](docs/specs/ux-guidelines.md) | How the product interacts |
+| [docs/specs/user-guide.md](docs/specs/user-guide.md) | How to install and use the product |
+| [docs/specs/roadmap.md](docs/specs/roadmap.md) | Where the product is going |
+| [docs/plans/](docs/plans/) | Per-feature implementation plans |
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome — features, bug fixes, and documentation.
+
+Quick start:
+
+```bash
+git clone https://github.com/vikrampsingh/vps-mediasync-cli.git
+cd vps-mediasync-cli
+npm install
+npm run build
+node ./bin/run.js backup
+```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the full contributor guide.
+
+---
+
 ## 🛠 Built With
 
 * Node.js (ESM)
@@ -74,17 +111,19 @@ vps-mediasync-cli cleanup
 
 ## 🚀 Roadmap
 
-* [ ] Auto-install dependencies (ADB, rsync)
-* [ ] App-level backup (WhatsApp, Telegram, etc.)
-* [ ] Device naming (Pixel, Samsung, etc.)
-* [ ] WiFi connection flow
-* [ ] GUI wrapper (future)
+See [docs/specs/roadmap.md](docs/specs/roadmap.md) for the current milestone and future direction.
 
 ---
 
 ## 👨‍💻 Author
 
 Vikram Singh
+
+---
+
+## 📄 License
+
+[MIT](LICENSE)
 
 ---
 
