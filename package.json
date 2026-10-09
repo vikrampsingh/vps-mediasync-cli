@@ -3,6 +3,22 @@
   "version": "1.0.1",
   "description": "CLI tool to backup and clean Android media to Mac",
   "license": "MIT",
+  "author": "Vikram Singh",
+  "keywords": [
+    "android",
+    "backup",
+    "adb",
+    "rsync",
+    "media",
+    "cli",
+    "cleanup"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vikrampsingh/vps-mediasync-cli.git"
+  },
+  "homepage": "https://github.com/vikrampsingh/vps-mediasync-cli#readme",
+  "bugs": "https://github.com/vikrampsingh/vps-mediasync-cli/issues",
   "type": "module",
   "bin": {
     "vps-mediasync-cli": "bin/run.js"

@@ -109,6 +109,43 @@ Show available commands:
 vps-mediasync-cli --help
 ```
 
+### Uninstalling
+
+Remove MediaSync from your Mac:
+
+```bash
+npm uninstall -g vps-mediasync-cli
+```
+
+Verify the removal:
+
+```bash
+vps-mediasync-cli --version
+```
+
+This should print `command not found`.
+
+#### Optional leftovers
+
+MediaSync stores no configuration files or caches on your Mac. The only
+leftover possible is the temporary backup folder `~/mediasync_tmp`, which can
+remain if a backup was interrupted. Check for and remove it if present:
+
+```bash
+ls ~/mediasync_tmp
+rm -rf ~/mediasync_tmp
+```
+
+Your backup data in the destination folders you selected is **your data** —
+uninstalling MediaSync never touches it.
+
+ADB and rsync were installed separately and are not removed by uninstalling
+MediaSync. If you no longer need them:
+
+```bash
+brew uninstall android-platform-tools
+```
+
 ---
 
 ## 4. Connecting your Android phone
