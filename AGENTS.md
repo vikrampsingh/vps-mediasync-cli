@@ -25,6 +25,9 @@ They are the authoritative reference for the product:
 * `docs/project/roadmap.md`
   → current development priorities and longer-term direction
 
+* `docs/developer-guide.md`
+  → development environment, testing, and debugging reference
+
 This file (`AGENTS.md`) defines **how a coding agent should work** on the project.
 
 When a task relates to a documented feature, read the relevant specification before implementing it.
@@ -75,13 +78,18 @@ bin/
 └── run.js          npm/oclif executable entry point
 
 docs/
-├── project/        Product documentation (see §23)
+├── project/            Product documentation (see §23)
 │   ├── product-requirements.md
 │   ├── architecture-design.md
 │   ├── ux-guidelines.md
 │   ├── user-guide.md
 │   └── roadmap.md
-└── plans/          Per-feature implementation plans
+├── developer-guide.md  Development, testing & debugging reference
+├── specs/              Reserved for future use (kept empty)
+└── plans/              Per-feature implementation plans
+
+docs/private/ is the maintainer's local-only area (release runbook);
+it is gitignored and not part of the repository.
 
 dist/
 └──                 Generated TypeScript output
@@ -720,6 +728,9 @@ If npm publishing is unavailable because of account, authentication,
 security, or registry issues, continue local development and package
 testing rather than repeatedly attempting publication.
 
+The maintainer release runbook lives at `docs/private/publishing.md`
+(gitignored — maintainer-local, not part of the repository).
+
 ---
 
 ## 20. Versioning
@@ -842,6 +853,15 @@ docs/project/user-guide.md
 docs/project/roadmap.md
     → current milestone and future direction
 
+docs/developer-guide.md
+    → development environment, testing, and debugging
+      (technical reference for building and verifying the CLI)
+
+docs/private/publishing.md
+    → maintainer-only npm release runbook
+      (gitignored — local to the maintainer's machine,
+       not part of the repository)
+
 docs/plans/
     → per-feature implementation plans with checklists
 
@@ -865,6 +885,9 @@ When interaction or UX behavior changes, update
 When installation or usage changes, update `docs/project/user-guide.md`.
 
 When development direction changes, update `docs/project/roadmap.md`.
+
+When development, testing, or debugging procedures change, update
+`docs/developer-guide.md`.
 
 When an agent workflow rule changes, update `AGENTS.md`.
 

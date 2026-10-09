@@ -58,5 +58,8 @@ temp/
 *.tgz
 *.tar.gz
 
+# Maintainer-local docs (never publish)
+docs/private/
+
 # Misc
 .node_modules.checksum

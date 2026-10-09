@@ -56,6 +56,10 @@ vps-mediasync-cli backup
 To test against a real device, connect an Android phone with USB debugging
 enabled (see [docs/project/user-guide.md](docs/project/user-guide.md) §4).
 
+For the full development reference — project structure details, Android
+device debugging commands, and pre-release package testing — see
+[docs/developer-guide.md](docs/developer-guide.md).
+
 ---
 
 ## 3. Before Changing Code

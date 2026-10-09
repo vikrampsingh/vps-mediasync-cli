@@ -77,6 +77,7 @@ vps-mediasync-cli cleanup --dry-run
 | [docs/project/ux-guidelines.md](docs/project/ux-guidelines.md) | How the product interacts |
 | [docs/project/user-guide.md](docs/project/user-guide.md) | How to install and use the product |
 | [docs/project/roadmap.md](docs/project/roadmap.md) | Where the product is going |
+| [docs/developer-guide.md](docs/developer-guide.md) | Development, testing & debugging reference |
 | [docs/plans/](docs/plans/) | Per-feature implementation plans |
 
 ---
