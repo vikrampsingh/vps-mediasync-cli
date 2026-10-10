@@ -2,9 +2,9 @@
 
 Technical reference for developing, testing, and debugging MediaSync CLI.
 
-* Contribution process (branches, PRs, ground rules) → [CONTRIBUTING.md](../CONTRIBUTING.md)
-* Product documentation (requirements, architecture, UX, usage, roadmap) → [docs/project/](project/)
-* Coding-agent workflow rules → [AGENTS.md](../AGENTS.md)
+* Contribution process (branches, PRs, ground rules) → [CONTRIBUTING.md](../../../CONTRIBUTING.md)
+* Product documentation (requirements, architecture, UX, usage, roadmap) → the sibling documents in this directory
+* Coding-agent workflow rules → [AGENTS.md](../../../AGENTS.md)
 
 ---
 
@@ -61,7 +61,7 @@ A useful rule:
 > Commands orchestrate; services do the work.
 
 Full layer responsibilities and design decisions:
-[project/architecture-design.md](project/architecture-design.md)
+[architecture-design.md](architecture-design.md)
 
 ---
 
@@ -90,7 +90,7 @@ The package itself supports:
 ```
 
 The CLI uses the system-installed rsync (macOS ships rsync 2.6.9, which is
-the supported baseline — see [project/product-requirements.md](project/product-requirements.md) §6.2).
+the supported baseline — see [product-requirements.md](product-requirements.md) §6.2).
 
 ---
 
@@ -200,7 +200,7 @@ edd07889    unauthorized
 
 unlock the Android phone and accept the USB debugging authorization prompt,
 then check again. The CLI itself also performs this check and reports
-unauthorized devices clearly (see [project/ux-guidelines.md](project/ux-guidelines.md) §8).
+unauthorized devices clearly (see [ux-guidelines.md](ux-guidelines.md) §8).
 
 ---
 
@@ -245,7 +245,7 @@ src/services/apps.ts
 ```
 
 This is the focus of the current development milestone
-([project/roadmap.md](project/roadmap.md) §1). The UX must eventually expose:
+([roadmap.md](roadmap.md) §1). The UX must eventually expose:
 
 ```text
 WhatsApp
@@ -300,8 +300,8 @@ Remove temporary directory
 
 The user should never need to know Android filesystem paths.
 
-Requirements: [project/product-requirements.md](project/product-requirements.md) §4.1
-Pipeline design: [project/architecture-design.md](project/architecture-design.md) §4
+Requirements: [product-requirements.md](product-requirements.md) §4.1
+Pipeline design: [architecture-design.md](architecture-design.md) §4
 
 ---
 
@@ -346,7 +346,7 @@ vps-mediasync-cli cleanup --dry-run
 
 Cleanup performs destructive operations — dry-run first, always.
 
-Safety requirements: [project/product-requirements.md](project/product-requirements.md) §5
+Safety requirements: [product-requirements.md](product-requirements.md) §5
 
 ---
 
@@ -387,8 +387,8 @@ commit
 push
 ```
 
-Commit and PR conventions: [CONTRIBUTING.md](../CONTRIBUTING.md) §8
-Agent-assisted workflow: [AGENTS.md](../AGENTS.md) §6
+Commit and PR conventions: [CONTRIBUTING.md](../../CONTRIBUTING.md) §8
+Agent-assisted workflow: [AGENTS.md](../../AGENTS.md) §6
 
 ---
 
