@@ -11,12 +11,23 @@ export const askPath = async (message: string) => {
   });
 };
 
-export const askSelect = async (message: string, choices: any[]) => {
-  return select({
+// export const askSelect = async (message: string, choices: any[]) => {
+//   return select({
+//     message,
+//     choices,
+//   });
+// };
+
+export const askSelect = async <T extends string>(
+  message: string,
+  choices: { name: string; value: T }[],
+): Promise<T> => {
+  return select<T>({
     message,
     choices,
   });
 };
+
 
 export const askCheckbox = async (message: string, choices: any[]) => {
   return checkbox({

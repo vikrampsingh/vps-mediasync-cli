@@ -1,9 +1,16 @@
 # Dependencies
 node_modules/
-package-lock.json
 yarn.lock
 pnpm-lock.yaml
 bun.lockb
+
+# Private docs (never publish)
+docs/private/
+
+
+# OS & Editor
+.DS_Store
+
 
 # Build & Compilation
 dist/
@@ -57,6 +64,9 @@ temp/
 # Packaging
 *.tgz
 *.tar.gz
+
+# Maintainer-local docs (never publish)
+docs/private/
 
 # Misc
 .node_modules.checksum

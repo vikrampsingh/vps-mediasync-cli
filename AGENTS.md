@@ -1,966 +1,480 @@
+# MediaSync CLI --- Agent Instructions
 
-````md
-# MediaSync CLI — Agent Instructions
+## 1. Purpose and Context
 
-## 1. Before Working on the Project
+MediaSync CLI is a local-first media management tool focused on reliable
+media backup and safe cleanup, initially targeting Android devices and
+macOS.
 
-Read the specifications under:
+Before making changes: - Inspect the relevant implementation, repository
+structure, and Git state. - Read the documentation relevant to the
+task. - Check `docs/specs/` for applicable feature specifications. -
+Check `docs/adr/` for relevant architecture decisions. - Treat the
+implementation as the source of truth for current behavior;
+documentation may describe intended or future behavior. - Avoid
+duplicate abstractions, documentation, and functionality. - Keep changes
+focused and preserve existing behavior unless the task requires a
+change.
 
-```text
-docs/specs/
-```
+This file defines how AI coding agents should work. It does not replace
+product specifications or authorize the agent to make unresolved product
+or architectural decisions.
 
-They are the authoritative reference for the product:
+## 2. Documentation Map
 
-* `docs/specs/product-requirements.md`
-  → product purpose, target users, V1 scope, functional and safety
-    requirements, definition of done
-* `docs/specs/architecture-design.md`
-  → architecture, components, runtime, internal pipelines,
-    important architectural decisions
-* `docs/specs/ux-guidelines.md`
-  → interaction model, prompts, message style, error UX
-* `docs/specs/user-guide.md`
-  → installation, device setup, command usage
-* `docs/specs/roadmap.md`
-  → current development priorities and longer-term direction
+-   `README.md` --- project overview, installation, quick start, and
+    primary entry point.
+-   `CONTRIBUTING.md` --- contribution workflow and development
+    expectations.
+-   `AGENTS.md` --- instructions for AI coding agents.
+-   `SECURITY.md` --- security reporting and supported security
+    practices.
+-   `docs/project/product-requirements.md` --- product goals,
+    requirements, scope, and constraints.
+-   `docs/project/architecture-design.md` --- architecture and major
+    design choices.
+-   `docs/project/developer-guide.md` --- development environment,
+    commands, and implementation guidance.
+-   `docs/project/user-guide.md` --- user-facing workflows and command
+    usage.
+-   `docs/project/ux-guidelines.md` --- CLI interaction, prompts,
+    progress, errors, and safety-related UX.
+-   `docs/project/roadmap.md` --- planned capabilities and development
+    priorities.
+-   `docs/plans/` --- implementation plans for non-trivial work.
+-   `docs/specs/` --- feature specifications defining intended behavior
+    and acceptance criteria.
+-   `docs/adr/` --- architecture decision records.
+-   `docs/private/` --- maintainer-local material only; contents must
+    remain ignored and must not be committed.
 
-This file (`AGENTS.md`) defines **how a coding agent should work** on the project.
+Read only the documents relevant to the task. Do not load every document
+by default.
 
-When a task relates to a documented feature, read the relevant specification before implementing it.
+Keep private operational information, credentials, tokens, and
+account-specific release details out of public documentation. A
+directory named `private` is not automatically excluded from Git; verify
+ignore rules before adding sensitive material.
 
-Do not duplicate complete product, architecture, or feature specifications in this file.
+When documentation paths change, update affected references rather than
+creating duplicate copies.
 
----
+## 3. Technology Stack and Repository Structure~
 
-## 2. Project Stack
+The project uses: - Node.js and TypeScript with ECMAScript modules
+(ESM). - oclif v4 for CLI commands. - `@inquirer/prompts` for
+interactive input. - `chalk` for terminal styling. - `ora` for progress
+indicators. - ADB and rsync as external runtime dependencies.
 
-MediaSync CLI is built with:
+The initial target is Android media management from macOS. Do not claim
+support for other operating systems, device types, or connection modes
+unless the implementation and tests establish it.
 
-* Node.js
-* TypeScript
-* ESM
-* oclif v4
-* `@inquirer/prompts`
-* `chalk`
-* `ora`
+Follow the existing repository structure. Important areas include: -
+`src/commands/` --- CLI command entry points and workflow
+orchestration. - `src/services/` --- operational logic and integrations,
+including device, dependency, filesystem, path resolution,
+synchronization, and cleanup behavior. - `src/core/` --- shared domain
+concepts and application-level logic, where present. - `src/utils/` ---
+reusable CLI presentation and interaction helpers, where present. -
+`bin/run.js` --- executable entry point. - `dist/` --- generated
+TypeScript output. - `docs/` --- project documentation.
 
-Runtime system dependencies:
-
-* ADB
-* rsync
-
-Target platform:
-
-* macOS
-
-Node requirement:
-
-```text
->=18
-```
-
----
-
-## 3. Repository Structure
-
-```text
-src/
-├── commands/       CLI commands and orchestration
-├── core/           Domain concepts and shared application logic
-├── services/       System integrations and operational logic
-└── utils/          Reusable CLI UX helpers
-
-bin/
-└── run.js          npm/oclif executable entry point
-
-docs/
-├── specs/          Product specifications (see §23)
-│   ├── product-requirements.md
-│   ├── architecture-design.md
-│   ├── ux-guidelines.md
-│   ├── user-guide.md
-│   └── roadmap.md
-└── plans/          Per-feature implementation plans
-
-dist/
-└──                 Generated TypeScript output
-```
-
-Do not treat `src/index.ts` as the CLI entry point.
-
-The actual executable is:
-
-```text
-bin/run.js
-```
-
-oclif discovers commands from:
-
-```text
-dist/commands/
-```
-
----
+Inspect the actual tree before relying on a path or assuming a module
+exists. oclif discovers compiled commands from `dist/commands`; do not
+assume the application is launched through `src/index.ts`.
 
 ## 4. Architecture Rules
 
-### Commands
-
-Files under:
-
-```text
-src/commands/
-```
-
-should remain thin orchestration layers.
-
-They should:
-
-* parse flags
-* coordinate workflows
-* call prompts
-* call services
-* present high-level results
-
-Do not put substantial business logic, filesystem logic, ADB logic,
-synchronization logic, or cleanup logic directly into command classes.
-
-### Services
-
-Files under:
-
-```text
-src/services/
-```
-
-contain operational and integration logic.
-
-Examples:
-
-* ADB
-* device discovery
-* application discovery
-* dependency checking
-* filesystem operations
-* path resolution
-* synchronization
-* cleanup
-
-Prefer reusable services over duplicating logic across commands.
-
-### Core
-
-Files under:
-
-```text
-src/core/
-```
-
-contain shared domain concepts and application-level logic.
-
-### Utils
-
-Files under:
-
-```text
-src/utils/
-```
-
-contain reusable CLI presentation and interaction helpers.
-
-Do not duplicate prompt, spinner, or common formatting logic across commands.
-
----
-
-## 5. Existing Components
-
-Current commands:
-
-```text
-src/commands/
-├── backup.ts
-├── cleanup.ts
-└── hello.ts
-```
-
-`hello` is scaffolding only.
-
-Current services:
-
-```text
-src/services/
-├── adb.ts
-├── apps.ts
-├── cleanup-engine.ts
-├── dependency.ts
-├── device.ts
-├── filesystem.ts
-├── resolver.ts
-├── sync.ts
-└── validate.ts
-```
-
-Do not rename or reorganize existing components without a concrete
-architectural reason.
-
----
-
-## 6. Development Workflow
-
-For every non-trivial task:
-
-### Step 1 — Inspect
-
-Before changing code:
-
-* read the relevant source files
-* read the relevant specification under `docs/specs/`
-* understand existing behavior
-* identify dependencies between components
-* inspect the current Git state
-
-### Step 2 — Plan
-
-Explain:
-
-* what needs to change
-* which files will change
-* why the changes are required
-* how existing behavior will be preserved
-* how the change will be tested
-
-For substantial changes, wait for human approval before implementation.
-
-### Step 3 — Implement
-
-Make the smallest coherent change that satisfies the requirement.
-
-Do not:
-
-* rewrite unrelated code
-* refactor working components unnecessarily
-* introduce new dependencies without justification
-* change architecture merely for stylistic reasons
-* silently change product behavior
-
-### Step 4 — Build
-
-Run:
-
-```bash
-npm run build
-```
-
-### Step 5 — Test
-
-Run the affected CLI command(s).
-
-For example:
-
-```bash
-vps-mediasync-cli backup
-```
-
-or:
-
-```bash
-vps-mediasync-cli cleanup --dry-run
-```
-
-### Step 6 — Review
-
-Inspect:
-
-```bash
-git diff
-```
-
-and:
-
-```bash
-git status
-```
-
-Check for:
-
-* unintended changes
-* debug code
-* unnecessary dependencies
-* unsafe filesystem operations
-* broken UX
-* unrelated refactoring
-
-### Step 7 — Report
-
-Summarize:
-
-* files changed
-* behavior added or changed
-* tests performed
-* remaining limitations
-* any decisions requiring human input
-
----
-
-## 7. Build Commands
-
-Build:
-
-```bash
-npm run build
-```
-
-Clean build:
-
-```bash
-rm -rf dist
-npm run build
-```
-
-Run directly:
-
-```bash
-node ./bin/run.js --help
-node ./bin/run.js --version
-node ./bin/run.js backup
-node ./bin/run.js cleanup --dry-run
-node ./bin/run.js hello
-```
-
-During local development, the project may be globally linked:
-
-```bash
-npm link
-```
-
-Then:
-
-```bash
-vps-mediasync-cli --help
-vps-mediasync-cli backup
-vps-mediasync-cli cleanup --dry-run
-```
-
----
-
-## 8. TypeScript / ESM Rules
-
-This is an ESM project.
-
-When importing local TypeScript modules, retain the `.js` extension:
-
-```ts
+-   Keep command handlers focused on argument parsing, orchestration,
+    prompts, and high-level results.
+-   Put reusable operational logic and external integrations in
+    appropriate services.
+-   Keep domain logic independent of terminal presentation where
+    practical.
+-   Reuse established helpers and patterns before introducing new
+    abstractions.
+-   Avoid unnecessary dependencies and architectural complexity.
+-   Keep business logic testable without a connected Android device
+    wherever practical.
+-   Do not duplicate functionality across commands or services.
+-   Consult relevant ADRs before making changes that conflict with
+    established decisions.
+-   Do not rename or reorganize existing components without a concrete
+    reason and an appropriately scoped plan.
+
+Use the existing service responsibilities where they exist: -
+`src/services/dependency.ts` --- checks for required external
+dependencies such as ADB and rsync. - `src/services/device.ts` --- ADB
+device discovery and device-related operations. - `src/services/apps.ts`
+--- application discovery. - `src/services/resolver.ts` --- mapping
+selected categories or applications to source paths. -
+`src/services/filesystem.ts` --- filesystem operations. -
+`src/services/sync.ts` --- synchronization using rsync. -
+`src/services/cleanup-engine.ts` --- cleanup candidate processing and
+deletion workflow. - `src/utils/prompt.ts` and `src/utils/spinner.ts`
+--- shared terminal interaction helpers.
+
+These paths describe expected responsibilities based on the existing
+design. Verify the current tree and implementation before editing or
+relying on a particular module.
+
+## 5. Development Workflow
+
+For non-trivial work: 1. Inspect the repository, relevant code,
+documentation, dependencies, tests, and Git status. 2. Understand
+current behavior, requirements, constraints, and the intended outcome.
+3. Create or update a written plan under `docs/plans/` before
+implementation. 4. Identify the smallest coherent implementation,
+affected areas, risks, and validation strategy. 5. Implement focused
+changes consistent with the existing architecture. 6. Build and run
+relevant tests. 7. Review the complete diff for correctness, unintended
+changes, and missing documentation. 8. Address issues found and repeat
+relevant validation. 9. Update the plan with actual progress, decisions,
+blockers, deviations, and verification evidence. 10. Report the changes
+and the validation actually performed.
+
+Small, straightforward changes do not require a separate implementation
+plan. Use judgment: a change is non-trivial when it involves multiple
+steps, meaningful risk, behavior changes, architectural/refactoring
+work, or coordinated documentation, dependency, tooling, build, test, or
+configuration changes.
+
+For significant, risky, destructive, or approval-dependent changes,
+present the plan and obtain the project author's approval before
+implementation where required. A written plan is not itself approval. Do
+not silently make material product or architectural decisions.
+
+Do not claim that a build, test, or manual verification passed unless it
+was actually performed.
+
+## 6. TypeScript, ESM, and oclif Conventions
+
+-   Preserve the existing TypeScript configuration and strictness.
+-   Use `.js` extensions in relative imports between local TypeScript
+    modules when required by the project's ESM conventions.
+-   Follow the existing oclif command structure and default-export
+    conventions.
+-   Prefer explicit types and clear interfaces over unnecessary
+    complexity.
+-   Avoid introducing `any` or suppressing type errors without a
+    justified reason.
+-   Do not weaken compiler settings to make a change pass.
+-   Follow existing naming, formatting, and error-handling conventions.
+
+Example ESM import:
+
+``` ts
 import { logger } from '../core/logger.js';
 ```
 
-Do not change this to:
-
-```ts
-import { logger } from '../core/logger';
-```
-
-Commands must be default exports extending oclif's `Command`:
-
-```ts
-export default class Backup extends Command {
-}
-```
-
-Keep TypeScript strictness enabled.
-
-Do not weaken TypeScript configuration merely to make a change compile.
-
----
-
-## 9. Dependency Rules
-
-ADB and rsync are runtime system dependencies.
-
-Dependency checking belongs in:
-
-```text
-src/services/dependency.ts
-```
-
-Commands should not independently implement their own ADB/rsync detection.
-
-Before operations requiring these tools, use the existing dependency-checking mechanism.
-
-Do not assume a dependency exists simply because it exists on the developer's machine.
-
----
-
-## 10. Android / ADB Rules
-
-Use the existing ADB service for ADB-related operations.
-
-Do not duplicate ADB device discovery logic in commands.
-
-Device selection should:
-
-* verify ADB availability
-* detect usable devices
-* allow the user to select a device
-* present human-readable device information
-* retain the actual device ID internally
-
-Do not make users enter Android filesystem paths as part of normal workflows.
-
----
-
-## 11. Backup Rules
-
-The backup workflow is conceptually:
-
-```text
-dependencies
-    ↓
-device selection
-    ↓
-category selection
-    ↓
-application selection where applicable
-    ↓
-path resolution
-    ↓
-destination selection
-    ↓
-ADB → temporary directory
-    ↓
-rsync → permanent destination
-    ↓
-temporary directory cleanup
-```
-
-Preserve this separation.
-
-Do not bypass the temporary extraction stage without an explicit architectural decision.
-
-Do not replace the incremental synchronization mechanism without first understanding the existing `sync.ts` implementation.
-
----
-
-## 12. Category and Application Rules
-
-Users should select high-level categories such as:
-
-```text
-Images
-Videos
-Downloads
-Documents
-Audio / Recordings
-Applications
-```
-
-Do not expose Android filesystem structure unnecessarily.
-
-Application-aware backup should prefer friendly application names such as:
-
-```text
-WhatsApp
-Telegram
-Instagram
-Adobe Scan
-```
-
-over:
-
-```text
-com.whatsapp
-org.telegram.messenger
-com.instagram.android
-```
-
-Application discovery belongs in:
-
-```text
-src/services/apps.ts
-```
-
-Path mapping belongs in:
-
-```text
-src/services/resolver.ts
-```
-
-Do not hard-code application-specific behavior into `backup.ts`
-unless there is a compelling architectural reason.
-
----
-
-## 13. Filesystem Rules
-
-Filesystem operations must be defensive.
-
-Before reading, copying, synchronizing, or deleting:
-
-* validate paths
-* handle missing paths
-* handle inaccessible paths
-* avoid accidental traversal outside the intended scope
-
-Do not construct destructive shell commands from unchecked user input.
-
-Prefer existing filesystem services over duplicating filesystem logic.
-
-Never assume a path exists merely because it exists on the development machine.
-
----
-
-## 14. Cleanup Safety Rules
-
-Cleanup is destructive.
-
-Therefore:
-
-> Never delete user data without explicit confirmation.
-
-The cleanup flow must maintain:
-
-```text
-select scope
-    ↓
-select age
-    ↓
-identify candidates
-    ↓
-preview
-    ↓
-explicit confirmation
-    ↓
-delete
-```
-
-`--dry-run` must never modify Android data.
-
-The cleanup engine belongs in:
-
-```text
-src/services/cleanup-engine.ts
-```
-
-Do not move destructive logic into the oclif command merely for convenience.
-
-When modifying cleanup behavior, test with:
-
-```bash
-vps-mediasync-cli cleanup --dry-run
-```
-
-before performing any real deletion.
-
----
-
-## 15. CLI UX Rules
-
-MediaSync is an interactive utility.
-
-Prefer clear messages such as:
-
-```text
-▶ Checking dependencies...
-✔ ADB available
-✔ Device selected
-▶ Backing up images...
-✔ Backup complete
-```
-
-Use the existing UX utilities:
-
-```text
-src/utils/prompt.ts
-src/utils/spinner.ts
-```
-
-Prefer:
-
-* `select` for single-choice decisions
-* `checkbox` for multiple selections
-* input prompts for values
-* spinners for long-running operations
-
-Avoid:
-
-* unnecessary technical output
-* raw Android paths in normal UX
-* raw package IDs where friendly names are available
-* uncontrolled streams of filenames
-* unexplained shell output
-
-Errors should be understandable to normal users.
-
----
-
-## 16. Error Handling
-
-Do not silently swallow operational failures.
-
-Handle common failures explicitly, including:
-
-* ADB unavailable
-* no devices
-* unauthorized device
-* missing Android path
-* inaccessible destination
-* rsync failure
-* permission errors
-* cleanup failures
-
-Do not expose stack traces during normal operation unless a debugging
-mechanism explicitly requires them.
-
-Do not invent successful outcomes after a failed operation.
-
----
-
-## 17. Testing Expectations
-
-There is currently no formal automated test suite.
-
-Therefore every change should at minimum include:
-
-```bash
+## 7. Device and Dependency Handling
+
+-   Use the established dependency service rather than duplicating ADB
+    or rsync checks in command handlers.
+-   Before an operation requiring ADB or rsync, check the required
+    dependency using the existing mechanism.
+-   Handle missing dependencies, absent devices, unauthorized devices,
+    disconnected devices, failed commands, and inaccessible paths
+    gracefully.
+-   Device selection must retain the actual device ID internally while
+    presenting useful human-readable device information.
+-   Ensure every device-specific operation targets the intended selected
+    device; propagate the selected device ID through the complete
+    workflow.
+-   Never assume only one Android device is connected.
+-   Do not claim reliable multi-device support until selection is
+    consistently propagated through relevant operations and the behavior
+    has been tested.
+-   Do not bypass device authorization or other security controls.
+-   Avoid exposing unnecessary raw command output when a clear,
+    actionable error can be provided.
+-   Do not require users to enter Android filesystem paths as part of
+    normal workflows.
+
+## 8. Backup and Filesystem Safety
+
+Preserve the established backup pipeline unless an explicitly approved
+architecture change says otherwise:
+
+1.  Check dependencies.
+2.  Select the Android device.
+3.  Select media categories and application scope where supported.
+4.  Resolve source paths.
+5.  Select the destination.
+6.  Use ADB to copy source media into a temporary directory.
+7.  Use rsync to synchronize into the permanent destination.
+8.  Clean up temporary data only when safe.
+
+Rules: - Preserve original source media during backup. - Do not bypass
+the temporary extraction stage without first understanding the current
+implementation and obtaining approval for an architectural change. - Do
+not replace the incremental synchronization mechanism without
+understanding the existing `sync.ts` implementation and relevant
+requirements. - Validate source and destination paths before
+operations. - Prevent unintended overwrites, path traversal, and writes
+outside the intended destination. - Handle filenames, spaces, unusual
+characters, missing files, inaccessible paths, and filesystem errors
+safely. - Clean up temporary files only when safe to do so. - Report
+actual outcomes accurately, including partial failures. - Distinguish a
+successful copy from a verified backup. - A dry-run must preview the
+intended plan without performing data-changing backup operations. - Do
+not imply that media is protected merely because a backup was attempted.
+
+## 9. Categories, Applications, and Path Resolution
+
+-   Prefer high-level categories such as Images, Videos, Downloads,
+    Documents, Audio/Recordings, and Applications where those are
+    supported by the implementation.
+-   Do not expose Android filesystem structure unnecessarily.
+-   When application-aware selection is implemented, prefer friendly
+    names such as WhatsApp or Telegram over package IDs where possible.
+-   Keep application discovery and source-path mapping in the
+    established service layers rather than hard-coding
+    application-specific behavior into command handlers without a
+    compelling reason.
+-   Verify supported categories, app-aware behavior, and source paths
+    against the implementation and product requirements before
+    documenting or changing them.
+
+## 10. Cleanup and Destructive Operations
+
+Cleanup can permanently delete user media. Treat it as high risk.
+
+-   Show users what is proposed for deletion before destructive
+    operations.
+-   Require explicit confirmation before deleting data.
+-   Ensure dry-run mode never modifies Android media or performs
+    deletion.
+-   Do not delete files solely because they are old, large, visually
+    similar, or identified as possible duplicates.
+-   Account for backup status and verification where cleanup safety
+    depends on them.
+-   Never represent an unverified backup as a safe recovery copy.
+-   Handle cancellation, interruptions, and partial failures without
+    falsely reporting success.
+-   Prefer conservative behavior whenever file identity, backup status,
+    or deletion safety is uncertain.
+-   Never run destructive tests against real user media without explicit
+    authorization.
+-   Use the cleanup dry-run workflow to inspect candidates before any
+    real cleanup operation.
+
+## 11. CLI User Experience and Error Handling
+
+Follow `docs/project/ux-guidelines.md` and existing UX utilities.
+
+-   Provide clear, actionable errors and useful progress feedback.
+-   Keep prompts understandable and avoid unnecessary interaction.
+-   Use consistent terminal styling and existing prompt/spinner helpers.
+-   Prefer friendly device and application names when available.
+-   Clearly distinguish completed, skipped, failed, and cancelled
+    operations.
+-   Avoid false success messages and misleading progress indicators.
+-   Ensure cancellation does not accidentally trigger destructive
+    actions.
+-   Keep non-interactive behavior predictable when supported.
+-   Do not silently swallow operational failures.
+-   Handle common failures explicitly, including unavailable ADB, no
+    devices, unauthorized devices, missing Android paths, inaccessible
+    destinations, rsync failures, permission errors, and cleanup
+    failures.
+-   Avoid exposing stack traces during normal operation unless a
+    debugging mechanism explicitly requires them.
+
+## 12. Build, Run, and Validation Commands
+
+Build the project:
+
+``` bash
 npm run build
 ```
 
-plus manual testing of the affected behavior.
+Run the CLI from the source checkout:
 
-Do not claim that a feature is tested merely because TypeScript compiles.
-
-When appropriate, test against a real Android device.
-
-For destructive functionality:
-
-```bash
-vps-mediasync-cli cleanup --dry-run
+``` bash
+node ./bin/run.js --help
+node ./bin/run.js --version
+node ./bin/run.js backup
+node ./bin/run.js backup --dry-run
+node ./bin/run.js cleanup --dry-run
 ```
 
-must be tested before real cleanup.
+If the project is linked locally:
 
-When a feature has multiple workflow states, test both the expected
-success path and relevant failure/cancellation paths.
+``` bash
+npm link
+vps-mediasync-cli --help
+```
 
----
+Choose validation appropriate to the change: - Run `npm run build` after
+meaningful code changes. - Run relevant automated tests, adding or
+updating tests for new behavior and regressions. - Test failure paths,
+cancellation, invalid input, and boundary conditions where relevant. -
+Use mocks and fixtures where real devices or destructive actions are
+unnecessary. - Use a real Android device when integration behavior
+cannot be established adequately through automated tests. - For
+destructive functionality, test the dry-run and confirmation behavior
+without risking real user data. - Clearly state which checks were run,
+which were not run, and any unresolved limitations. - Do not claim a
+feature is tested merely because TypeScript compiles.
 
-## 18. Package Testing
+## 13. Implementation Plans and Task Tracking
 
-Before release:
+A written plan under `docs/plans/` is required for non-trivial changes,
+including: - New features and enhancements. - Bug fixes that require
+multiple steps or affect meaningful behavior. - Refactoring and
+architectural changes. - Multi-step documentation changes. - Dependency,
+tooling, build, testing, and configuration changes that require
+coordinated work. - Other work involving meaningful risk or a sequence
+of actions.
 
-```bash
+Small, straightforward changes do not need a separate plan.
+
+### 13.1 Plan Before Implementation
+
+Before implementing non-trivial work: 1. Inspect the relevant code,
+documentation, tests, and repository state. 2. Understand the requested
+outcome and identify requirements and constraints. 3. Create or update a
+plan document under `docs/plans/`. 4. Describe the approach, scope,
+affected areas, dependencies, risks, and validation strategy as
+appropriate. 5. End the plan with an actionable Markdown `TODO`
+checklist. 6. Identify decisions or actions that require the project
+author's approval.
+
+Do not begin non-trivial implementation until its plan is written. If
+the task is substantial or requires approval, present the plan and
+obtain approval before proceeding.
+
+Use descriptive filenames such as `fix-device-selection.md` or
+`feature-backup-verification.md`. Update an existing plan when
+continuing the same piece of work rather than creating duplicate plans.
+
+### 13.2 Plans and Specifications Are Different
+
+-   **Specifications** in `docs/specs/` define intended behavior,
+    requirements, acceptance criteria, and constraints.
+    Developers/project authors create or own these specifications.
+-   **Implementation plans** in `docs/plans/` describe how the agent
+    will implement a feature, fix, or other non-trivial change. AI
+    agents create and maintain these plans and their TODO checklists.
+
+Use applicable specifications as inputs to a plan. Do not silently
+change requirements or treat a plan as authorization to expand scope. Do
+not create a specification merely because a plan is required. If
+requirements are ambiguous, conflicting, or require a material
+product/architecture decision, ask the project author.
+
+### 13.3 Maintain Plans and Verify Completion
+
+AI agents are responsible for keeping plans and TODO checklists current
+during implementation and review.
+
+-   Keep incomplete, blocked, and unverified tasks unchecked.
+-   Revise checklist items when scope or approach changes, and explain
+    material deviations in the plan.
+-   Record important decisions, validation results, blockers, and
+    deviations where useful.
+-   Obtain the project author's approval before actions or decisions
+    that require it; a plan does not itself constitute approval.
+-   **Do not mark a task complete until the user/project author has
+    verified the result.** Before that verification, leave the relevant
+    task unchecked and clearly report what implementation and testing
+    have been completed, along with what remains for user verification.
+-   At completion, ensure the plan reflects the actual state and any
+    remaining limitations.
+
+Plans are living execution records. Keep them useful and current rather
+than treating them as documents written once and then ignored. Do not
+put task-specific TODO lists in this permanent instruction file; task
+checklists belong in their individual plans.
+
+## 14. Documentation Maintenance
+
+Update documentation when a change affects documented behavior,
+workflows, architecture, or user expectations.
+
+Use the established locations: - Requirements and product scope:
+`docs/project/product-requirements.md` - Architecture and design:
+`docs/project/architecture-design.md` - Development instructions:
+`docs/project/developer-guide.md` - User workflows and commands:
+`docs/project/user-guide.md` - CLI interaction standards:
+`docs/project/ux-guidelines.md` - Roadmap and priorities:
+`docs/project/roadmap.md` - Implementation plans and task tracking:
+`docs/plans/` - Feature specifications: `docs/specs/` - Architecture
+decision records: `docs/adr/`
+
+Do not create a separate document for every task if it belongs to an
+existing plan. Keep documentation consistent with implemented behavior
+and label proposed or future capabilities clearly.
+
+## 15. Packaging, Release, and Versioning
+
+Packaging and publishing are release activities, not routine development
+steps.
+
+Before a release, inspect package contents and verify the executable
+configuration. When appropriate, run:
+
+``` bash
+npm run build
 npm pack --dry-run
-```
-
-Then:
-
-```bash
 npm pack
 ```
 
-Install the generated tarball in a separate environment:
+Test the generated package in a separate environment when preparing a
+release, for example:
 
-```bash
+``` bash
 npm install -g ./vps-mediasync-cli-X.Y.Z.tgz
-```
-
-Verify:
-
-```bash
 vps-mediasync-cli --version
 vps-mediasync-cli --help
 ```
 
-This tests the actual npm package rather than only the development checkout.
+The package executable configuration should remain consistent with the
+existing entry point:
 
----
-
-## 19. npm Publishing
-
-npm publishing is a release operation.
-
-Do not publish after every development change.
-
-Before publishing:
-
-```bash
-npm whoami
-npm profile get
-npm pkg get name version
-npm run build
-npm pack --dry-run
-```
-
-The package executable configuration must remain:
-
-```json
-"bin": {
-  "vps-mediasync-cli": "bin/run.js"
+``` json
+{
+  "bin": {
+    "vps-mediasync-cli": "bin/run.js"
+  }
 }
 ```
 
-Do not change it to an alternative form without understanding npm/oclif
-packaging behavior.
-
-Publishing:
-
-```bash
-npm publish
-```
-
-After publishing:
-
-```bash
-npm view vps-mediasync-cli version
-```
-
-Publishing must never be used as a substitute for local testing.
-
-If npm publishing is unavailable because of account, authentication,
-security, or registry issues, continue local development and package
-testing rather than repeatedly attempting publication.
-
----
-
-## 20. Versioning
-
-Use semantic versioning.
-
-Bug fix:
-
-```bash
-npm version patch
-```
-
-Backward-compatible feature:
-
-```bash
-npm version minor
-```
-
-Breaking change:
-
-```bash
-npm version major
-```
-
-Do not increment versions merely because development continues.
-
-Only create a release version when the project has reached a meaningful
-release milestone.
-
----
-
-## 21. Git Rules
-
-Before making substantial changes:
-
-```bash
-git status
-```
-
-After implementation:
-
-```bash
-git diff
-git status
-```
-
-Do not overwrite or discard unrelated user changes.
-
-Do not reset, checkout, or revert user changes unless explicitly instructed.
-
-Keep commits focused and meaningful.
-
-Prefer commits such as:
-
-```text
-Add application discovery
-Improve Android device selection
-Implement cleanup dry-run
-Fix backup path resolution
-```
-
-Avoid vague commits such as:
-
-```text
-Fix stuff
-Updates
-Changes
-```
-
-Do not commit generated artifacts unless the repository explicitly requires them.
-
----
-
-## 22. Scope Control
-
-When asked to implement a feature:
-
-1. Understand the requested behavior.
-2. Read the relevant specification.
-3. Inspect the existing implementation.
-4. Identify the minimum affected components.
-5. Change only what is necessary.
-6. Preserve working behavior.
-7. Test the affected workflow.
-8. Do not perform unrelated refactoring.
-
-If the requested feature reveals an architectural problem:
-
-1. identify the problem
-2. explain why it matters
-3. propose the smallest reasonable architectural change
-4. obtain approval before performing a broad redesign
-
-Do not turn a feature request into an unsolicited rewrite.
-
----
-
-## 23. Documentation Rules
-
-Documentation responsibilities:
-
-```text
-docs/specs/product-requirements.md
-    → what the product is and must do
-      (purpose, users, scope, functional / safety / non-functional
-       requirements, definition of done)
-
-docs/specs/architecture-design.md
-    → how the product is built
-      (layers, components, runtime, pipelines, design decisions,
-       architectural principles)
-
-docs/specs/ux-guidelines.md
-    → how the product interacts
-      (interaction model, prompts, message style, error UX)
-
-docs/specs/user-guide.md
-    → how to install and use the product
-
-docs/specs/roadmap.md
-    → current milestone and future direction
-
-docs/plans/
-    → per-feature implementation plans with checklists
-
-AGENTS.md
-    → how a coding agent works on the project
-      (behavior, development workflow, safety constraints,
-       project-specific implementation rules)
-```
-
-Keep these responsibilities separate.
-
-When a product requirement changes, update
-`docs/specs/product-requirements.md`.
-
-When an architectural decision changes, update
-`docs/specs/architecture-design.md`.
-
-When interaction or UX behavior changes, update
-`docs/specs/ux-guidelines.md`.
-
-When installation or usage changes, update `docs/specs/user-guide.md`.
-
-When development direction changes, update `docs/specs/roadmap.md`.
-
-When an agent workflow rule changes, update `AGENTS.md`.
-
-Do not duplicate the same information across these locations.
-
----
-
-## 24. Current Priority
-
-The current major development milestone is:
-
-### App-aware backup
-
-Focus on:
-
-1. Discovering installed Android applications.
-2. Identifying applications relevant to media backup.
-3. Presenting friendly application names.
-4. Allowing application selection.
-5. Resolving application media paths.
-6. Integrating application selection into the existing backup workflow.
-7. Testing the complete flow against a real Android device.
-
-Do not redesign unrelated parts of MediaSync while implementing this milestone.
-
----
-
-## 25. Agent Behavior
-
-The agent is an implementation assistant, not the product owner.
-
-For straightforward changes, implement directly.
-
-For non-trivial changes:
-
-```text
-inspect
-    ↓
-understand
-    ↓
-read relevant specification
-    ↓
-plan
-    ↓
-ask for approval
-    ↓
-implement
-    ↓
-build
-    ↓
-test
-    ↓
-review
-    ↓
-report
-```
-
-When requirements are ambiguous:
-
-* identify the ambiguity
-* explain the relevant options
-* ask for a decision
-
-Do not silently make significant product or architectural decisions.
-
-Always favor:
-
-* small changes
-* explicit reasoning
-* existing abstractions
-* safety
-* testability
-* maintainability
-
-over cleverness or unnecessary abstraction.
-
----
-
-## 26. Plan Documents & Verification
-
-- Multi-step features are planned in `docs/plans/<feature>.md` with a Markdown todo checklist.
-- Track progress against that checklist during implementation and report status per item.
-- Never mark a task complete until the user verifies the result — ask explicitly.
-- Feature work follows the staged workflow: ISSUE → READ REPOSITORY → PLAN →
-  IMPLEMENT/EDIT → RUN TESTS → INSPECT RESULT → PATCH (if needed) → TEST AGAIN →
-  report (files changed, behavior, tests, side effects, limitations).
-
-````
-
-### Documentation hierarchy
-
-```text
-AGENTS.md
-    → how to work
-
-docs/specs/
-    → what the product is, how it is architected, how it interacts,
-      how to use it, and where it is going (see §23)
-````
+-   Do not publish after every development change.
+-   Never use publishing as a substitute for local testing.
+-   Before publishing, verify the package name/version, account/registry
+    state, build, and package contents.
+-   If publishing is blocked by account, authentication, security, or
+    registry issues, continue local development and package testing
+    rather than repeatedly attempting publication.
+-   Use semantic versioning: patch for compatible fixes, minor for
+    backward-compatible features, and major for breaking changes.
+-   Do not increment versions merely because development continues.
+    Release only at meaningful milestones.
+-   Follow the maintainer's private release notes when available; never
+    commit private release details or credentials.
+
+## 16. Git and Change Scope
+
+-   Inspect `git status` before editing and before finalizing.
+-   Review the complete diff and staged diff before committing.
+-   Preserve unrelated user changes and untracked files.
+-   Keep changes focused on the requested task.
+-   Do not run destructive Git commands such as `git reset --hard`,
+    `git clean`, or broad reverts without explicit permission.
+-   Do not commit, push, publish, or create a release unless requested
+    or otherwise explicitly authorized.
+-   Do not commit generated artifacts unless the repository explicitly
+    requires them.
+
+## 17. Completion Report
+
+At the end of a task, report: - What changed and why. - Which files were
+affected. - Which build, test, or validation commands actually ran and
+their results. - What the user/project author still needs to verify. -
+Any limitations, risks, blockers, or follow-up work.
+
+Be precise about verification. Do not claim functionality is complete,
+safe, or tested beyond the evidence available.
