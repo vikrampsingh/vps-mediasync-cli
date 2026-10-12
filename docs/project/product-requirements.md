@@ -1,252 +1,93 @@
-# MediaSync CLI — Product Requirements
+# MediaSync Product Requirements
 
-This document defines **what** MediaSync is and **what it must do**.
+## Purpose and Scope
 
-* How it is built → `architecture-design.md`
-* How it interacts → `ux-guidelines.md`
-* How to install and use it → `user-guide.md`
-* Where it is going → `roadmap.md`
+This document defines the product-level functional requirements for MediaSync. It describes what the product must do, not the detailed interaction flows or technical implementation; those belong in feature specifications and architecture documentation.
 
----
+Requirements are grouped by roadmap phase and status. Checkboxes indicate tracking state:
 
-## 1. Product Overview
+- `[x]` Completed — currently available behaviour, as identified for this document.
+- `[ ]` In progress — being implemented or validated.
+- `[ ]` Planned — agreed requirement not yet implemented.
 
-MediaSync CLI is an interactive command-line application for managing media
-between Android devices and a Mac.
+A checkbox is a status tracker, not a substitute for verification. A requirement should only be marked completed when its behaviour has been validated. Detailed acceptance scenarios and implementation constraints belong in the relevant feature specification.
 
-The primary goals are:
+## Phase 0 — Trust, Safety and Engineering Foundation
 
-- Back up media from an Android device to a Mac or attached storage.
-- Incrementally synchronize backed-up media.
-- Clean old media from an Android device in a controlled and safe manner.
-- Hide Android filesystem complexity from the user.
-- Provide a simple, interactive CLI experience rather than requiring users
-  to remember ADB commands or Android storage paths.
+**Objective:** Evolve the current CLI into a backup engine that users can trust. Prevent unintended data loss; make behaviour testable and predictable.
 
-The package is distributed through npm as:
+### Completed
 
-```text
-vps-mediasync-cli
-```
+- [X] **Android device discovery and selection** — Run `vps-mediasync-cli backup` to discover Android devices available through ADB and interactively select the device to back up. No device-selection command-line option is currently documented; selection happens in the prompt flow.
+- [X] **Media category selection** — Run `vps-mediasync-cli backup` and choose the supported media categories in the interactive prompts. Category-specific command-line flags are not currently documented.Let users choose supported media categories to include in a backup
+- [X] **Destination selection** — Run `vps-mediasync-cli backup` and select the local destination folder interactively, including a folder on attached storage. A destination-path option is not currently documented.Let users select a local folder or an attached storage destination for backed-up media
+- [X] **Incremental synchronization** — Run `vps-mediasync-cli backup` to synchronize selected media to the destination through the existing rsync-based workflow. The command has no additional documented sync flags beyond `--dry-run`.Synchronize media to the selected destination using the existing rsync-based workflow
+- [X] **Backup dry-run** — Run `vps-mediasync-cli backup --dry-run` to preview planned backup paths and file counts without copying files.Let users preview planned backup paths and file counts without copying files
+- [X] **Cleanup dry-run** — Run `vps-mediasync-cli cleanup --dry-run` to preview candidate files for cleanup without deleting them. Run `vps-mediasync-cli cleanup` for the interactive cleanup flow, which requires confirmation before deletion.Let users preview candidate files for cleanup without deleting them
 
-The primary target platform is macOS.
+### In Progress
 
----
+No Phase 0 requirements are marked in progress in this document yet.
 
-## 2. Product Philosophy
+### Planned
 
-MediaSync behaves like a small utility application rather than a collection
-of low-level ADB commands.
+- [ ] **Predictable device and destination handling** — Keep the selected device and destination explicit throughout an operation, and avoid acting on an unintended device or location.
+- [ ] **Safe backup operation** — Preserve the source media during backup and report when an operation cannot complete as intended.
+- [ ] **Guarded destructive actions** — Make cleanup actions explicit and reviewable, and require deliberate user confirmation before deletion.
+- [ ] **Useful failure reporting** — Explain failures in terms users can act on, including device access, unavailable paths, destination problems, and interrupted operations.
+- [ ] **Testable critical operations** — Strengthen automated tests for important paths and failure scenarios so core behaviour can be checked without requiring a connected device wherever practical.
+- [ ] **Consistent dependency checks** — Check required external tools using the established dependency-checking service and provide actionable guidance when dependencies are missing.
+- [ ] **Reliable engineering and release workflow** — Maintain repeatable build, validation, packaging, and release practices.
+- [ ] **Consistent operation outcomes** — Report whether an operation completed, partially completed, failed, or was cancelled, without implying success when work remains incomplete.
+- [ ] **Safer interruption handling** — Ensure temporary data and partial operations are handled predictably after errors or interruption.
+- [ ] **Explicit safety boundaries** — Document and enforce the guarantees and limitations of backup and cleanup, including cases where the product cannot verify that media is safely backed up.
 
-Users think in terms of:
+## Phase 1 — Reliable Backup Engine
 
-- Images
-- Videos
-- Downloads
-- Documents
-- Audio / Recordings
-- Applications
+**Objective:** Evolve the current CLI into a backup engine that offers users a dependable, incremental, and verifiable backup experience.
 
-and not in terms of:
+### Completed
 
-- `/sdcard/DCIM/Camera`
-- `/sdcard/Android/media/...`
-- ADB pull commands
-- rsync commands
+No Phase 1 requirements are marked completed in this document yet.
 
-The application translates user intent into the appropriate Android
-filesystem operations.
+### In Progress
 
-### Core principle
+No Phase 1 requirements are marked in progress in this document yet.
 
-> The user describes WHAT they want to manage; MediaSync determines HOW
-> to access it.
+### Planned
 
-This is a user-facing product delivered via CLI. Therefore:
+- [ ] **Dependable incremental backups** — Repeated backups should transfer new or changed media without unnecessarily copying all existing media again.
+- [ ] **Transfer outcome reporting** — Summarize copied, skipped, failed, and incomplete transfers so users can understand the outcome of a backup.
+- [ ] **Backup manifest** — Record enough information about a backup operation and its results to support review and future verification.
+- [ ] **Persistent backup history** — Let users review previous backup operations and their outcomes.
+- [ ] **Backup verification** — Provide a way to verify backed-up files and identify files that are missing, incomplete, or otherwise not verified.
+- [ ] **Interrupted backup recovery** — Handle interrupted or failed operations in a way that allows users to understand what remains incomplete and safely retry.
+- [ ] **Repeated-backup consistency** — Ensure repeated operations behave predictably and do not silently remove destination data that is outside the intended operation.
+- [ ] **Actionable backup summary** — Present a clear summary of the destination, operation result, outstanding errors, and any limitations that affect confidence in the backup.
 
-- UX is first-class
-- Safety is mandatory
-- Abstractions matter
+## Non-Functional Requirements — Apply Across Phases 0 and 1
 
----
+These requirements apply to all Phases capabilities unless a requirement or specification explicitly narrows their applicability.
 
-## 3. Target Users
+- [ ] **Data safety** — Backup must not delete or modify source media. Destructive cleanup must be a separate, explicit operation with appropriate safeguards.
+- [ ] **Predictability** — The same inputs and conditions should lead to consistent, understandable outcomes; unexpected conditions must be reported rather than silently ignored.
+- [ ] **Transparency** — Users must be able to understand what the tool attempted, what succeeded, what failed, and what remains uncertain.
+- [ ] **Local-first operation** — Media should be handled locally by default, with no requirement to upload personal media to a third-party service for Phase 0 or Phase 1 functionality.
+- [ ] **Cross-platform readiness** — Keep product behaviour and core operations structured so additional host operating systems can be supported without duplicating core logic. Actual platform support must be stated only after it is implemented and validated.
+- [ ] **Testability** — Core logic should be testable independently of terminal presentation and, where practical, without a connected Android device or real media.
+- [ ] **Maintainability** — CLI commands should orchestrate operations while reusable business logic and external integrations remain in appropriate services.
+- [ ] **Operational resilience** — Handle expected failures such as disconnected devices, inaccessible source paths, unavailable destinations, insufficient storage, and interrupted transfers without falsely reporting full success.
+- [ ] **Privacy** — Avoid unnecessary collection or exposure of personal media, device information, and filesystem details in logs or reports.
+- [ ] **Dependency clarity** — Detect required external tools and clearly explain missing or unsupported dependencies instead of assuming they are available.
+- [ ] **Usability and accessibility** — Prompts, progress, errors, summaries, and destructive confirmations should use clear language and provide enough context for informed decisions.
+- [ ] **Verifiability** — A requirement is complete only after its expected behaviour has been validated; a successful compilation alone does not establish functional correctness.
 
-- Developers
-- Power users
-- Tech-savvy individuals managing device storage
-- Future: general users (via a GUI wrapper — see `roadmap.md`)
+## Relationship to Other Documents
 
----
+- [Roadmap](roadmap.md) — communicates product direction, phases, and high-level status.
+- [Feature specifications](../specs/) — define detailed behaviour, workflows, edge cases, and verification scenarios for individual features.
+- [Architecture design](architecture-design.md) and [architecture decision records](../adr/) — document system structure and the rationale for significant technical choices.
+- [Implementation plans](../plans/) — track the execution of non-trivial changes, including validation and outstanding work.
+- [User guide](user-guide.md) — explains how to use implemented capabilities.
 
-## 4. Functional Requirements
-
-### 4.1 Backup
-
-Command:
-
-```bash
-vps-mediasync-cli backup
-```
-
-Required workflow:
-
-1. Check required dependencies.
-2. Detect connected Android devices.
-3. Ask the user to select a device.
-4. Ask which media categories should be backed up.
-5. Where appropriate, detect relevant installed applications.
-6. Ask the user which applications should be included.
-7. Resolve categories and applications into Android paths.
-8. Ask the user to select a destination.
-9. Pull data from Android into temporary local storage.
-10. Incrementally synchronize temporary data to the permanent destination.
-11. Remove temporary data.
-12. Report the result.
-
-The permanent destination must not be unnecessarily recopied: repeated
-backups transfer only new or changed files.
-
-`backup --dry-run` previews the backup (per-path file counts, total,
-destination) without creating directories, pulling data, or running rsync.
-
-### 4.2 Cleanup
-
-Command:
-
-```bash
-vps-mediasync-cli cleanup
-```
-
-Required workflow:
-
-1. Check required dependencies.
-2. Select Android device.
-3. Select categories.
-4. Specify an age threshold.
-5. Identify candidate files.
-6. Preview what will be removed.
-7. Request explicit confirmation.
-8. Delete only after confirmation.
-9. Report the result.
-
-Cleanup must avoid system-critical and unknown directories.
-
-### 4.3 Application-Aware Backup
-
-Many Android applications store user-generated media under
-application-specific directories.
-
-The application layer must:
-
-1. Discover installed packages through ADB.
-2. Identify applications relevant to media management.
-3. Resolve package identifiers into friendly names where possible.
-4. Let the user select applications.
-5. Resolve selected applications to their media locations.
-6. Integrate the resulting paths into the normal backup workflow.
-
-This functionality should evolve toward dynamic discovery rather than
-maintaining a permanently hard-coded list of applications.
-
-### 4.4 Dependency Management
-
-The CLI depends on external system tools:
-
-```text
-ADB
-rsync
-```
-
-The application must:
-
-- detect missing dependencies
-- explain what is missing
-- provide installation guidance
-- automatically install dependencies only where this is safe and supported
-- verify that installation succeeded before continuing
-
-The CLI must not silently assume that required system tools exist.
-
----
-
-## 5. Safety Requirements
-
-Cleanup is inherently destructive. Therefore:
-
-> No destructive cleanup operation may occur without explicit user
-> confirmation.
-
-The cleanup flow must provide:
-
-- clear scope
-- age threshold
-- candidate preview
-- explicit confirmation
-
-Deletion rules:
-
-- Never delete system directories.
-- Never delete unknown or unvalidated paths.
-- Always preview before delete.
-- Always require confirmation.
-- Validate paths before deletion.
-
-`cleanup --dry-run` must provide a genuine non-destructive preview. It must
-never be treated as merely a display option while still allowing deletion
-through another execution path.
-
----
-
-## 6. Non-Functional Requirements
-
-### 6.1 Platform
-
-- macOS is the primary supported platform.
-- ADB and rsync must be available on the host system.
-- macOS normally ships rsync 2.6.9, which is the supported baseline.
-
-### 6.2 rsync Compatibility
-
-The implementation must remain compatible with the rsync version available
-on the target Mac.
-
-Do not assume that all macOS installations have the same rsync version.
-
-Avoid rsync options unavailable in the supported baseline version unless the
-compatibility strategy is explicitly changed.
-
-### 6.3 Performance
-
-- Avoid loading entire file lists into memory where avoidable.
-- Stream file operations where possible.
-- Batch operations where practical.
-
-### 6.4 Reliability
-
-- Fail gracefully with clear error messages.
-- Use meaningful exit codes.
-- Never invent successful outcomes after a failed operation.
-
----
-
-## 7. Definition of Done (V1)
-
-- `vps-mediasync-cli backup` works end-to-end.
-- `vps-mediasync-cli cleanup` safely deletes old files with preview and
-  confirmation.
-- Interactive UX implemented per `ux-guidelines.md`.
-- Packaged and installable via npm.
-- Works reliably on Mac + Android.
-
----
-
-## 8. Out of Scope for V1
-
-The following were considered during early product design but are **not**
-part of the current implementation. They are tracked in `roadmap.md`:
-
-- A standalone `config` command (default backup path, retention settings)
-- A standalone `apps` discovery command
-- Conversational/natural-language CLI input
-- GUI wrapper
+This document intentionally excludes requirements for Phase 2 and later roadmap phases. Those requirements will be added when those phases are brought into scope.
